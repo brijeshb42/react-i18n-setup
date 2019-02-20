@@ -9,10 +9,21 @@ const config: webpack.Configuration = {
   entry: {
     main: './src/client/index.ts',
   },
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+      },
+    ],
+  },
   output: {
     path: path.resolve(process.cwd(), 'dist'),
     filename: '[name].js',
     publicPath: `//localhost:${DEV_PORT}/dist/`,
+  },
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js', '.scss', '.css'],
   },
   devServer: {
     port: DEV_PORT,
