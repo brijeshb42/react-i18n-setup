@@ -6,17 +6,8 @@ interface HeadProps {
   title: string,
   lang: string,
   html: string,
+  serverRendered: boolean,
   assetPath: (src: string) => string,
-}
-
-function Script({ src, children }: { src?: string, children?: () => string }) {
-  if (src) {
-    return (<script src={src} />);
-  } else if (children) {
-    return <script dangerouslySetInnerHTML={{ __html: children() }} />;
-  }
-
-  return null;
 }
 
 function Template(props: HeadProps) {
@@ -28,17 +19,15 @@ function Template(props: HeadProps) {
       </head>
       <body>
         <div id="app" dangerouslySetInnerHTML={{ __html: props.html }} />
-        <Script>
-          {() => {
-            return `(function(w) {
-              var isServerRendered = true;
+        <script>
+          {`(function(w) {
+              var r = ${JSON.stringify(props.serverRendered)};
               w.isServerRendered = function() {
-                return isServerRendered;
+                return r;
               };
-            })(window);`;
-          }}
-        </Script>
-        <Script src={props.assetPath('main.js')} />
+          })(window);`}
+        </script>
+        <script src={props.assetPath('main.js')} />
       </body>
     </html>
   );
@@ -60,3 +49,4 @@ export function renderToString(MainComponent: ComponentType, url: string, contex
   const content = renderApp(MainComponent, url, context);
   return ReactDOMServer.renderToString(content);
 }
+

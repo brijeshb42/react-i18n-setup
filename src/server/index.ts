@@ -2,14 +2,14 @@ import { createServer } from 'http';
 import { StaticRouter } from 'react-router';
 import ReactDOMServer from 'react-dom/server';
 
+import { render as renderShell, renderToString } from './template';
+import { logger } from './logger';
 import Routes from '../shared/routes';
-
-import { render, renderToString } from './template';
 
 const server = createServer((request, resp) => {
   const context = {};
 
-  const appShell = render({
+  const appShell = renderShell({
     title: 'i18n example',
     lang: 'en',
     html: renderToString(Routes, request.url!, context),
@@ -19,13 +19,14 @@ const server = createServer((request, resp) => {
       }
 
       return src;
-    }
+    },
+    serverRendered: true,
   });
 
   resp.write(`<!DOCTYPE html>${appShell}`);
   resp.end();
 });
 
-console.log('Started backend on 3000');
 server.listen(3000);
+logger('Started backend on 3000');
 

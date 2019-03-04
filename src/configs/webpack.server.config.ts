@@ -1,26 +1,25 @@
 import path from 'path';
 import webpack from 'webpack';
+import nodeExternals from 'webpack-node-externals';
 
-import { resolve, rules } from './common';
-
-const DEV_PORT = 8081;
+import { resolve, backendRules } from './common';
 
 const config: webpack.Configuration = {
   mode: 'development',
+  target: 'node',
   entry: {
-    main: './src/client/index.ts',
+    server: './src/server/index.ts',
   },
   module: {
-    rules,
+    rules: backendRules,
   },
   resolve,
+  externals: [
+    nodeExternals({}),
+  ],
   output: {
-    path: path.resolve(process.cwd(), 'dist'),
+    path: path.resolve(process.cwd(), 'server'),
     filename: '[name].js',
-    publicPath: `//localhost:${DEV_PORT}/dist/`,
-  },
-  devServer: {
-    port: DEV_PORT,
   },
   plugins: [
     new webpack.DefinePlugin({
@@ -32,6 +31,10 @@ const config: webpack.Configuration = {
     }),
     new webpack.HotModuleReplacementPlugin(),
   ],
+  node: {
+    __dirname: true,
+    __filename: true,
+  },
 };
 
 export default config;
